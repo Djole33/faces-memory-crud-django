@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,15 +12,15 @@
     <div class="container" style="text-align: center;">
         <h1>Level 1</h1>
         <h2>Random Faces:</h2>
-        <ol>
-            {% for face in object_list %}
-                <li>{{ face.face }}</li>
-            {% endfor %}
-        </ol>
+        {% for face, name in face_name_pairs %}
+            <img src="{{ face.face.url }}" alt="Face Image"><br />
+            <h2>{{ name.name }}</h2>
+        {% endfor %}
         <div id="timer" style="font-size: 24px; margin: 20px 0;">
             Time Remaining: <span id="timer-countdown">00:00</span>
         </div>
         <a href="{% url 'recall' %}"><button class="btn btn-primary">Proceed to Recall</button></a>
+        <br />
     </div>
 </body>
 </html>
