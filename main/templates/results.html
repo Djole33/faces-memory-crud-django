@@ -11,8 +11,11 @@
     <div class="form-group container" style="text-align: center;">
         <h1>Random Faces:</h1>
         <ol>
-            {% for face in faces %}
-                <li>{{ face.face }}</li>
+            {% for face, name in face_name_pairs %}
+                <li>
+                    <img src="{{ face.face.url }}" alt="Face Image" style="max-width: 200px;"/><br />
+                    {{ name.name }}
+                </li>
             {% endfor %}
         </ol>
         <h1>Recalled Faces:</h1>
@@ -20,6 +23,8 @@
             <ol>
                 {% for guess in guesses %}
                     <li>{{ guess }}</li>
+                {% empty %}
+                    <li>No guesses made.</li>
                 {% endfor %}
             </ol>
         {% else %}

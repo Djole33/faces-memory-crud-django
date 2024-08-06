@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,28 +13,40 @@
     <div class="form-group container" style="text-align: center;">
         <form method="POST">
             {% csrf_token %}
-            <h1 style="font-weight: bold;margin-top: 5%;">Number of faces to guess: {{ faces_to_guess }}</h1>
+            <h1 style="font-weight: bold; margin-top: 5%;">Guess the face</h1>
             <br /><br />
-            {{ form.as_p}}
+            
+            <div class="mb-3">
+                <img src="{{ face_name_data.face_url }}" alt="Face Image"><br />
+            </div>
+            
+            <div>
+                <h2>Guesses:</h2>
+                <ol>
+                    {% for guess in guesses %}
+                        <li>{{ guess }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+            
+            <div>
+                {{ form.as_p }}
+            </div>
+            
             <br />
-            <ol>
-                {% for guess in guesses %}
-                    <li>{{ guess }}</li>
-                {% endfor %}
-            </ol>
             <br />
-            <button class="btn btn-success">Enter</button>
+            <button class="btn btn-success" name="submit_guess">Submit</button>
         </form>
         {% if guesses %}
-            <form method="post" action="#">
+            <form method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Delete Last Guess</button>
+                <button type="submit" name="delete_last_guess" class="btn btn-danger">Delete Last Guess</button>
             </form>
         {% endif %}
         {% if guesses %}
-            <form method="post" action="#">
+            <form method="post">
                 {% csrf_token %}
-                <button class="btn btn-info" type="submit">See Results</button>
+                <button type="submit" name="see_results" class="btn btn-info">See Results</button>
             </form>
         {% endif %}
     </div>
