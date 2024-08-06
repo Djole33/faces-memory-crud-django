@@ -14,8 +14,8 @@
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
+            <a href="{% url 'faces-list' %}"><button type="submit" class="btn btn-primary">Start</button></a>
         </form>
-        <a href="{% url 'faces-list' %}"><button type="submit" class="btn btn-primary">Start</button></a>
     </div>
 </body>
 </html>

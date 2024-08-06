@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="container" style="text-align: center;">
-        <h1>Level 1</h1>
+        <h1>Level {{ level }}</h1>
         <h2>Random Faces:</h2>
         {% for face, name in face_name_pairs %}
             <img src="{{ face.face.url }}" alt="Face Image"><br />

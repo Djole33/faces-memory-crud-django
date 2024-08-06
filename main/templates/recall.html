@@ -13,7 +13,7 @@
     <div class="form-group container" style="text-align: center;">
         <form method="POST">
             {% csrf_token %}
-            <h1 style="font-weight: bold; margin-top: 5%;">Guess the face</h1>
+            <h1 style="font-weight: bold; margin-top: 5%;">Guess {{ nums_of_faces }} faces</h1>
             <br /><br />
             
             <div class="mb-3">
@@ -38,7 +38,7 @@
             <button class="btn btn-success" name="submit_guess">Submit</button>
         </form>
         {% if guesses %}
-            <form method="post">
+            <form method="post" action="{% url 'delete-guess' %}">
                 {% csrf_token %}
                 <button type="submit" name="delete_last_guess" class="btn btn-danger">Delete Last Guess</button>
             </form>

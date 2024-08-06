@@ -14,3 +14,10 @@ class Name(models.Model):
     
     def __str__(self):
 	    return str(self.name)
+        
+class Level(models.Model):
+    level = models.IntegerField()
+
+    def __str__(self):
+        return str(self.level)
+        

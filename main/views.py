@@ -1,26 +1,39 @@
 from django.shortcuts import render, redirect
 from .models import Name, Face
 from random import shuffle
-from .forms import NameForm
+from .forms import NameForm, LevelForm
+from django.http import HttpRequest, HttpResponse
 
 def index(request):
-    if 'face_name_pairs' in request.session:
-        del request.session['face_name_pairs']
-    if 'current_index' in request.session:
-        del request.session['current_index']
-    if 'guesses' in request.session:
-        del request.session['guesses']
-    return render(request, 'index.html')
+    # Clear session data
+    request.session.pop('face_name_pairs', None)
+    request.session.pop('current_index', None)
+    request.session.pop('guesses', None)
+
+    form = LevelForm()
+    if request.method == "POST":
+        form = LevelForm(request.POST)
+        if form.is_valid():
+            level = int(form.cleaned_data['level'])
+            request.session['level'] = level
+            return redirect('/faces-list')
+    
+    return render(request, 'index.html', {'form': form})
 
 def faces_list(request):
+    # Get the level from the session
+    level = request.session.get('level')
+    if level is None:
+        return redirect('/')  # Redirect to the index page if level is not set
+
+    num_of_faces = level * 2
+    
     # Get all faces from the database
     face_queryset = list(Face.objects.all())
-    # Shuffle the list of faces
     shuffle(face_queryset)
-    
+
     # Get all names from the database
     name_queryset = list(Name.objects.all())
-    # Shuffle the list of names
     shuffle(name_queryset)
     
     # Ensure the length of name_queryset matches face_queryset
@@ -30,10 +43,13 @@ def faces_list(request):
     # Pair faces and names
     face_name_pairs = list(zip(face_queryset, name_queryset))
     
-    # Store the face-name pairs in the session
-    request.session['face_name_pairs'] = [(face.pk, name.pk) for face, name in face_name_pairs]
+    # Limit the pairs based on the current level
+    limited_face_name_pairs = face_name_pairs[:num_of_faces]
+    
+    # Clear previous face-name pairs from the session
+    request.session['face_name_pairs'] = [(face.pk, name.pk) for face, name in limited_face_name_pairs]
 
-    return render(request, 'faces-list.html', {'face_name_pairs': face_name_pairs})
+    return render(request, 'faces-list.html', {'face_name_pairs': limited_face_name_pairs, 'level': level})
 
 def recall(request):
     # Initialize session variables if not present
@@ -92,11 +108,23 @@ def recall(request):
     else:
         form = NameForm()
 
+    level = request.session.get('level')
+    nums_of_faces = level * 2
+
     return render(request, 'recall.html', {
         'form': form,
         'guesses': guesses,
-        'face_name_data': face_name_data
+        'face_name_data': face_name_data,
+        'nums_of_faces': nums_of_faces
     })
+
+def delete_guess(request: HttpRequest) -> HttpResponse:
+    if 'guesses' in request.session and request.session['guesses']:
+        request.session['guesses'].pop()
+        request.session.modified = True
+        request.session['current_index'] -= 1
+
+    return redirect('/recall')
 
 def results(request):
     # Retrieve guesses from session
